@@ -15,7 +15,7 @@
       打开定位
     </button>
   </view>
-  <ad unit-id="adunit-ef34269cb8c55fdb"></ad>
+  <!-- <ad unit-id="adunit-ef34269cb8c55fdb"></ad> -->
   <view class="case-container">
     <block wx:for="{{caseList}}" wx:key="ncovID">
       <view class="case-box">
