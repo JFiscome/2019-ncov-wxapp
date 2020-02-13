@@ -1,0 +1,83 @@
+<view class="container">
+  <view class="banner">{{content}}</view>
+  <!-- <van-search wx:if="{{!mapStatus}}" value="{{ keyword }}" class="search" placeholder="{{placeholder}}" bind:change="onChange" show-action bind:search="onSearch" bind:cancel="onCancel" bindfocus="getLocation" /> -->
+  <van-search class="search" wx:if="{{!mapStatus}}" placeholder="{{placeholder}}" input-align="center" bindfocus="getLocation" />
+  <view class="address">
+    <view class="address-content" bind:tap="toggleArea" data-show="1">
+      {{address}}
+      <image class="icon-image" src="/images/down.png" />
+    </view>
+    <view class="address-button" bind:tap="getUserLocationInfo" wx:if="{{locationPermission}}">
+      <image class="icon-image" src="/images/location.png" />
+      刷新位置
+    </view>
+    <button wx:else type="warn" class="address-button-fail" open-type='openSetting' bindopensetting="openSetting">
+      打开定位
+    </button>
+  </view>
+  <ad unit-id="adunit-ef34269cb8c55fdb"></ad>
+  <view class="case-container">
+    <block wx:for="{{caseList}}" wx:key="ncovID">
+      <view class="case-box">
+        <view class="case-info">
+          <view class="show-address">{{item.show_address}}</view>
+          <view class="district-address">{{item.district}}</view>
+          <view class="district-address-block"></view>
+          <view class="full-address">{{item.full_address}}</view>
+        </view>
+        <view class="case-distance">
+          {{item.distanceContent}}
+          <text class="near-distance" wx:if="{{index == 0 && item.distance}}">\n 离你最近</text>
+        </view>
+      </view>
+    </block>
+  </view>
+  <view class="bottom-tip">{{caseList.length === 0 ? '- 暂未收集到该地区信息 -': '- 已经到底了 -'}}</view>
+  <view class="hidden-container" wx:if="{{areaStatus}}">
+    <view class="area-options">
+      <view class="options-text" bind:tap="toggleArea" data-show="0">取消</view>
+      <view class="options-text" bind:tap="sureArea">确定</view>
+    </view>
+    <view class="area-container">
+      <scroll-view class="area-row" scroll-y="{{true}}">
+        <block wx:for="{{areaList}}" wx:key="areaID" wx:for-index="parentIndex">
+          <view class="{{parentIndex == currentParentIndex ? 'area-name-active' : 'area-name' }}" bind:tap="chooseCity" data-index="{{parentIndex}}" data-level="0">
+            {{item.name}}
+          </view>
+        </block>
+      </scroll-view>
+      <scroll-view class="area-row area-row-border" scroll-y="{{true}}">
+        <block wx:for="{{areaList[currentParentIndex].children}}" wx:key="areaID" wx:for-index="childIndex">
+          <view class="{{childIndex == currentChildIndex ? 'area-name-active' : 'area-name' }}" bind:tap="chooseCity" data-index="{{childIndex}}" data-level="1">
+            {{item.name}}
+          </view>
+        </block>
+      </scroll-view>
+      <scroll-view class="area-row" hover-class="none" scroll-y="{{true}}">
+        <block wx:for="{{areaList[currentParentIndex].children[currentChildIndex].children}}" wx:key="areaID" wx:for-index="grandSonIndex">
+          <view class="{{grandSonIndex == currentGrandSonIndex ? 'area-name-active' : 'area-name' }}" bind:tap="chooseCity" data-index="{{grandSonIndex}}" data-level="2">
+            {{item.name}}
+          </view>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+  <view class="map-container-location location-search" wx:if="{{!areaStatus && mapStatus}}" bind:tap="getLocation">
+    <image src="/images/search.png" />
+  </view>
+  <view class="map-container-location" wx:if="{{!areaStatus && mapStatus}}" bind:tap="moveToLocation">
+    <image src="/images/now-location.png" />
+  </view>
+  <view class="map-container" style="bottom:240rpx" wx:if="{{!areaStatus}}">
+    <image src="/images/share.png" />
+    <text>生成海报</text>
+  </view>
+  <view class="map-container" wx:if="{{!areaStatus}}" bind:tap="toggleMap">
+    <image src="/images/{{mapStatus ? 'index.png' : 'map.png'}}" />
+    <text>{{mapStatus?'':'地图模式'}}</text>
+  </view>
+  <map id="map" class="map" wx:if="{{mapStatus}}" show-location longitude="{{longitude}}" latitude="{{latitude}}" layer-style="1" scale="{{scale}}" markers="{{markers}}" bindregionchange="regionChange" bindtap="" bindupdated="">
+    <cover-image src="/images/my-address.png" class="map-location" />
+  </map>
+  <view class="mask" wx:if="{{areaStatus}}" catchtouchmove="catchtouchmove"></view>
+</view>
